@@ -23,18 +23,21 @@ engine = MyISAM;
 
 create table tabla_2(
 ID_tabla int primary key auto_increment,
-FK_tabla2 varchar(9)) engine = InnoDB;
+FK_tabla1 varchar(9)) engine = InnoDB;
 
 #AQUI LE METEMOS FOREING KEY A LA TABLA 2 Y NO DARA ERROR PRQ ESTAMOS CON EL MOTOR InnoDB, al hacerlo con MyISAM dara error y no creara la FK
 alter table tabla_2
-add constraint FK_tabla1y2 foreign key (fk_tabla2) references tabla_1 (DNI);
+add constraint FK_tabla1y2 foreign key (fk_tabla1) references tabla_1 (DNI);
 
 #Hay que ponerle comillas al nombre para que no de error y el show table es para que muestre la tabla
 show table status like 'tabla_2';
+show table status like 'tabla_1';
 
 #Desc es para que te describa la tabla y pones el nombre de la tabla que quieras
 desc tabla_2;
+desc tabla_1;
 
 #Resumen: si usamos el motor MyISAM al añadir la FK deberia dar error y con el motor InnoDB si que nos deberia de crear la FK
 
 
+create index nombre on tabla_1 (nombre);
