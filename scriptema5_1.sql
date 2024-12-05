@@ -39,5 +39,14 @@ desc tabla_1;
 
 #Resumen: si usamos el motor MyISAM al añadir la FK deberia dar error y con el motor InnoDB si que nos deberia de crear la FK
 
+#esto es para crear un indice unico
+create unique index nombre on tabla_1 (nombre);
 
-create index nombre on tabla_1 (nombre);
+#esto es para eliminar el indice
+#drop index nombre_indice on nombre_tabla;
+
+drop index nombre on tabla_1;
+
+
+
+
