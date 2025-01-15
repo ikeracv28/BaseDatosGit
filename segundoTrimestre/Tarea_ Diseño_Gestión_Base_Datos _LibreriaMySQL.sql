@@ -129,16 +129,17 @@ GROUP BY c.id_cliente;
 
 -- Crear un nuevo pedido para Juan Pérez
 INSERT INTO pedidos (id_cliente, total)
-VALUES ((SELECT id_cliente FROM clientes WHERE nombre = 'Juan Pérez'), 0);
+VALUES (1, 0);
+select * from pedidos;
 
--- Obtener el último ID de pedido
-SET @id_pedido = LAST_INSERT_ID();
 
 -- Insertar detalles del pedido
 INSERT INTO detalles_pedidos (id_pedido, id_libro, cantidad, subtotal)
 VALUES 
-(@id_pedido, (SELECT id_libro FROM libros WHERE titulo = 'Cien Años de Soledad'), 1, 19.99),
-(@id_pedido, (SELECT id_libro FROM libros WHERE titulo = 'Fundación'), 2, 15.99 * 2);
+(1, 1, 1, 19.99),
+(1, 2, 2, 15.99 * 2);
+
+select * from detalles_pedidos;
 
 -- Actualizar el stock de los libros
 UPDATE libros
@@ -149,11 +150,14 @@ UPDATE libros
 SET stock = stock - 2
 WHERE titulo = 'Fundación';
 
+select * from libros;
+
 -- Calcular y actualizar el total del pedido
 UPDATE pedidos
 SET total = (SELECT SUM(subtotal) FROM detalles_pedidos WHERE id_pedido = @id_pedido)
 WHERE id_pedido = @id_pedido;
 
+select * from pedidos;
 COMMIT;
 
 -- 2. Simulación de Error con ROLLBACK:
@@ -162,6 +166,7 @@ COMMIT;
 -- Intentar crear un pedido con stock insuficiente
 INSERT INTO pedidos (id_cliente, total)
 VALUES ((SELECT id_cliente FROM clientes WHERE nombre = 'Juan Pérez'), 0);
+select * from pedidos;
 
 -- Obtener el último ID de pedido
 SET @id_pedido = LAST_INSERT_ID();
@@ -170,11 +175,13 @@ SET @id_pedido = LAST_INSERT_ID();
 INSERT INTO detalles_pedidos (id_pedido, id_libro, cantidad, subtotal)
 VALUES 
 (@id_pedido, (SELECT id_libro FROM libros WHERE titulo = 'El Cerebro de Broca'), 10, 18.50 * 10);
+select * from detalles_pedidos;
 
 -- Simulación de error al actualizar stock
 UPDATE libros
 SET stock = stock - 10
 WHERE titulo = 'El Cerebro de Broca';
+select * from libros;
 
 -- Revertir transacción
 ROLLBACK;
@@ -183,6 +190,7 @@ ROLLBACK;
 -- 1. Cálculo Automático del Total del Pedido:
  UPDATE pedidos
 SET total = (SELECT SUM(subtotal) FROM detalles_pedidos WHERE detalles_pedidos.id_pedido = pedidos.id_pedido);
+select * from pedidos;
 
 -- 2. Libros sin Autores Asignados:
 SELECT titulo FROM libros
