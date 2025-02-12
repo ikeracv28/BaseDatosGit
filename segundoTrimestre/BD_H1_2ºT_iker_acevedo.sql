@@ -227,19 +227,21 @@ inner join categorias_productos cp on p.id_producto = cp.id_producto
 inner join categorias c on cp.id_categoria = c.id_categoria;
 
 -- Consulta para obtener el nombre y precio de los productos, con la cantidad comprada
-select p.nombre, p.precio, d.cantidad
-from productos p
-inner join detalles_pedido d on p.id_producto = d.id_producto;
+select p.nombre, p.precio, d.cantidad from productos p
+inner join detalles_pedido d on p.id_detalle = d.id_detalle
+limit 1000;
+
 
 -- Consulta para obtener todos los productos y la cantidad total de cada uno en todos los pedidos
-select p.nombre, sum(d.cantidad) as total_vendido
-from productos p
-inner join detalles_pedido d on p.id_producto = d.id_producto
-group by p.nombre;
+select p.nombre, SUM(d.cantidad) as total_vendido from productos p
+inner join detalles_pedido d on p.id_detalle = d.id_detalle
+group by p.nombre
+limit 1000;
+
 
 -- Consulta para obtener el total de ventas por cliente
 select c.nombre, sum(d.precio * d.cantidad) as total
-from clientes c
+from cliente c
 inner join pedidos p on c.id_cliente = p.id_cliente
 inner join detalles_pedido d on p.id_pedido = d.id_pedido
 group by c.nombre;
