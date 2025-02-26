@@ -192,9 +192,39 @@ ROLLBACK;
 SET total = (SELECT SUM(subtotal) FROM detalles_pedidos WHERE detalles_pedidos.id_pedido = pedidos.id_pedido);
 select * from pedidos;
 
+-- manera de hacerlo con trigger
+DELIMITER //
+
+CREATE TRIGGER calcular_total_pedido
+AFTER INSERT ON detalles_pedidos
+FOR EACH ROW
+BEGIN
+    -- Sumar los subtotales de los detalles del pedido y actualizar el total
+    UPDATE pedidos
+    SET total = (
+        SELECT SUM(subtotal)
+        FROM detalles_pedidos
+        WHERE id_pedido = NEW.id_pedido
+    )
+    WHERE id_pedido = NEW.id_pedido;
+END;
+//
+
+DELIMITER ;
+
+INSERT INTO detalles_pedidos (id_pedido, id_libro, cantidad, subtotal)
+VALUES (1, 1, 2, 39.98); -- Pedido 1, 2 libros de "Cien Años de Soledad"
+select * from detalles_pedidos;
+
 -- 2. Libros sin Autores Asignados:
 SELECT titulo FROM libros
 WHERE id_libro NOT IN (SELECT DISTINCT id_libro FROM libro_autor);
+
+-- manera de hacerlo con trigger
+SELECT l.id_libro, l.titulo
+FROM libros l
+LEFT JOIN libro_autor la ON l.id_libro = la.id_libro
+WHERE la.id_autor IS NULL;
 
 -- 3. Pedidos con Desglose de Detalles: 
 SELECT p.id_pedido, c.nombre AS cliente, l.titulo AS titulo_libro, dp.cantidad, dp.subtotal
@@ -202,3 +232,4 @@ FROM pedidos p
 JOIN clientes c ON p.id_cliente = c.id_cliente
 JOIN detalles_pedidos dp ON p.id_pedido = dp.id_pedido
 JOIN libros l ON dp.id_libro = l.id_libro;
+
